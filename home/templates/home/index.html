@@ -1,0 +1,8 @@
+{% extends 'home/master.html' %}
+{% block body %}
+    <ul>
+        {% for post in all_post %}
+        <li><a href="{% url 'home:single_post' post.id %}">{{ post.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

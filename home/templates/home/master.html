@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SUSTForum</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{%  static 'home/css/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/index.css' %}">
+    <script src="{% static 'home/js/jquery.min.js' %}"></script>
+    <script src="{% static 'home/js/bootstrap.min.js' %}"></script>
+</head>
+<body>
+ <div class="menu-outer">
+    <nav class="navbar">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#"><img src="" alt=""></a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="{% url 'home:index' %}">Home</a></li>
+          <li><a href="{% url 'home:new_post' %}">New post</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'home:logout' %}"><span class="fa fa-sign-in"></span> {{ user }}</a></li>
+            {% else %}
+                <li><a href="{% url 'home:register' %}"><span class="fa fa-user"></span> Sign Up</a></li>
+                <li><a href="{% url 'home:login' %}"><span class="fa fa-sign-in"></span> Login</a></li>
+            {% endif %}
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <!-- Navigation Menu End -->
+  <!-- contents start-->
+  <div class="container">
+    {% block body %}
+    {% endblock %}
+  </div>
+  <!-- contents end-->
+  <!-- Footer Start -->
+  <div id="footer">
+    <div class="">All Right Reserved</div>
+    <div class="">Powered by <a href="#">Dept. of SUST</a></div>
+  </div>
+  <!-- Footer End -->
+</body>
+</html>

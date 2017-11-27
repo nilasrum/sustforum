@@ -1,0 +1,106 @@
+:root {
+  --table-color: #333;
+  --nav-color: #333;
+  --bg-color: #DDD;
+}
+
+body{
+    background: white url("../images/background.png");
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
+}
+
+/* Navigation Menu */
+
+.menu-outer {
+  background-color: var(--nav-color);
+  margin-bottom: 20px;
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, .7);
+}
+
+.navbar {
+  width: 80%;
+  margin: auto;
+}
+
+.navbar-nav ul {
+  height: 65px;
+}
+
+.navbar-nav li {
+  display: inline;
+  position: relative;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.navbar-nav a {
+  display: block;
+  line-height: 10px;
+  padding: 0 14px 0 15px;
+  text-decoration: none;
+  color: #fff;
+  text-shadow: #000 0px 1px 0, #515151 0 -1px 0;
+}
+
+.navbar-nav li:hover a {
+  color: #FFF;
+  background-color: #222;
+  transition: all .3s;
+  text-decoration: none;
+}
+
+.navbar-nav li a:focus {
+  background-color: #222;
+}
+
+.navbar-brand {
+  margin: 0;
+  padding: 0;
+  margin-top: -8px;
+}
+
+.navbar-img {
+  height: 25px;
+  margin-top: 18px;
+  margin-right: 10px;
+}
+
+
+/* container */
+.container {
+  margin: auto;
+  min-height: 100%;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  position: relative;
+  padding: 30px;
+  width: 80%;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px #bfbfbf;
+  z-index: 0;
+}
+
+/*footer*/
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  height: 70px;
+  background: #fff;
+  width: 100%;
+  text-align: center;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  font-size: 12px;
+}
+
+#footer a {
+  text-decoration: none;
+  color: #0578A5;
+}
