@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SUSTForum</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{%  static 'home/css/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/index.css' %}">
+    <script src="{% static 'home/js/jquery.min.js' %}"></script>
+    <script src="{% static 'home/js/bootstrap.min.js' %}"></script>
+    {% block custom-css %}
+    {% endblock %}
+</head>
+<body>
+ <div class="menu-outer">
+    <nav class="navbar">
+      <ul class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#"><img src="" alt=""></a>
+        </div>
+        <ul class="nav navbar-nav my-navbar-nav">
+          <li><a href="{% url 'home:index' %}">Home</a></li>
+          <li><a href="{% url 'home:new_post' %}">New post</a></li>
+        </ul>
+        <ul class="nav navbar-nav drop-navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+                <li class="dropdown wow fadeInDown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user }}<span class="fa fa-caret-down" style="margin-left: 10px"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="" href="{% url 'home:profile' user.pk %}"><i class="fa fa-user" style="margin-right: 10px"></i>profile</a></li>
+                        <li><a class="" href="{% url 'home:logout' %}"><i class="fa fa-sign-out" style="margin-right: 10px"></i>logout</a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <li><a href="{% url 'home:register' %}"><span class="fa fa-user"></span> Sign Up</a></li>
+                <li><a href="{% url 'home:login' %}"><span class="fa fa-sign-in"></span> Login</a></li>
+            {% endif %}
+        </ul>
+      </ul>
+    </nav>
+  </div>
+  <!-- Navigation Menu End -->
+  <!-- contents start-->
+  <div class="container">
+        {% block body %}
+        {% endblock %}
+  </div>
+  <!-- contents end-->
+  <!-- Footer Start -->
+  <div id="footer">
+    <div class="">All Right Reserved</div>
+    <div class="">Powered by <a href="#">Dept. of SUST</a></div>
+  </div>
+  <!-- Footer End -->
+{% block custom-js %}
+
+{% endblock %}
+</body>
+</html>

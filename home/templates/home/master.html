@@ -6,37 +6,72 @@
     {% load staticfiles %}
     <link rel="stylesheet" href="{%  static 'home/css/font-awesome/css/font-awesome.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/animate.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/index.css' %}">
-    <script src="{% static 'home/js/jquery.min.js' %}"></script>
-    <script src="{% static 'home/js/bootstrap.min.js' %}"></script>
+    {% block custom-css %}
+    {% endblock %}
 </head>
 <body>
  <div class="menu-outer">
     <nav class="navbar">
-      <div class="container-fluid">
+      <ul class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="#"><img src="" alt=""></a>
         </div>
-        <ul class="nav navbar-nav">
+        <ul class="nav navbar-nav my-navbar-nav">
           <li><a href="{% url 'home:index' %}">Home</a></li>
           <li><a href="{% url 'home:new_post' %}">New post</a></li>
         </ul>
-        <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav drop-navbar-nav navbar-right">
             {% if user.is_authenticated %}
-                <li><a href="{% url 'home:logout' %}"><span class="fa fa-sign-in"></span> {{ user }}</a></li>
+                <li class="dropdown wow fadeInDown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user }}<span class="fa fa-caret-down" style="margin-left: 10px"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="" href="{% url 'home:profile' user.pk %}"><i class="fa fa-user" style="margin-right: 10px"></i>profile</a></li>
+                        <li><a class="" href="{% url 'home:logout' %}"><i class="fa fa-sign-out" style="margin-right: 10px"></i>logout</a></li>
+                    </ul>
+                </li>
             {% else %}
                 <li><a href="{% url 'home:register' %}"><span class="fa fa-user"></span> Sign Up</a></li>
                 <li><a href="{% url 'home:login' %}"><span class="fa fa-sign-in"></span> Login</a></li>
             {% endif %}
         </ul>
-      </div>
+      </ul>
     </nav>
   </div>
   <!-- Navigation Menu End -->
   <!-- contents start-->
   <div class="container">
-    {% block body %}
-    {% endblock %}
+    <div class="col-md-9 force-margin">
+        {% block body %}
+        {% endblock %}
+    </div>
+    <div class="col-md-3">
+        <div class="search-box">
+            <form method='GET' action="{% url 'home:index' %}">
+            <input type="text" name="q" placeholder="search" value="{{ request.GET.q }}"/>
+            <input type="submit" value="&#xf002" id="submitButton">
+        </form>
+        </div>
+        {% block side-opt %}
+
+        {% endblock %}
+        {% if user.is_authenticated %}
+            <div class="chat-room" id="chat-room" data-room-id="{{ room.id }}" >
+                <h3>live-discuss</h3>
+                <div class="msgs" id="msgs">
+                    <ul id="msgs-list">
+
+                    </ul>
+                </div>
+                <div class="rep">
+                    <textarea class="input" id="input"></textarea>
+                    <button class="send btn btn-success" id="send">send</button>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
   </div>
   <!-- contents end-->
   <!-- Footer Start -->
@@ -45,5 +80,13 @@
     <div class="">Powered by <a href="#">Dept. of SUST</a></div>
   </div>
   <!-- Footer End -->
+ <script src="{% static 'home/js/jquery.min.js' %}"></script>
+ <script src="{% static 'home/js/bootstrap.min.js' %}"></script>
+ <script src="{% static 'home/js/wow.min.js' %}"></script>
+{# <script src="//cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>#}
+{# <script src="{% static "home/js/chat.js" %}"></script>#}
+{% block custom-js %}
+
+{% endblock %}
 </body>
 </html>

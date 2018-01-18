@@ -1,0 +1,48 @@
+.profile-avatar{
+    width: 200px;
+    border-radius: 999px;
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.profile-avatar img{
+    width: 100%;
+    height: auto;
+    border-radius: 999px;
+    border: 3px solid #ccc;
+}
+
+.credential h3{
+    font-size: 35px;
+}
+
+.firstname{
+    margin-right: 10px;
+}
+
+.spec{
+    margin-top: 13%;
+    font-family: 'Great Vibes', cursive;
+    color: #5e5e5e;
+}
+
+.stat{
+    margin-top: 30px;
+}
+
+.stat .pro-title{
+    margin-bottom: 15px;
+    color: #46b8da;
+}
+
+.title-divider{
+    width: 75%;
+    border-top: 1px solid #ccc;
+}
+
+.gen-stat{
+    padding: 10px;
+    padding-left: 30px;
+    color: #5e5e5e;
+}

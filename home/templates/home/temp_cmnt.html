@@ -1,0 +1,52 @@
+<div class="single-comment" id="clone" data-href="{% url 'home:comment_update' 222 %}">
+                <div class="old-cmnt" id="old" style="display: block">
+                    <div class="row">
+                        <div class="cmnt-avatar col-md-1"><img class="avatar-img" src="" alt=""></div>
+                        <div class="avatar-info col-md-11">
+                            <p class="cmnt-author">{{ user }}</p>
+                            <p class="cmnt-time">now</p>
+                        </div>
+                    </div>
+                    <h5 class="cmnt-body">comment</h5>
+                </div>
+
+                <div class="new-comment" style="display: none" id="new">
+                    <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                        <div class="form-group">
+                            <div class="col-sm-6 cmnt-author">
+                                {% if user.is_authenticated %}
+                                    <h5><span >{{ user }}</span> says ...</h5>
+                                {% else %}
+                                    <h5>(login required) <span >{{ user }}</span> says...</h5>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-6 cmnt-submit">
+                                <button type="submit" onclick="" class="my-btn btn-success pull-right">update</button>
+                                <button type="submit" onclick="" class="my-btn btn-danger pull-right">cancel</button>
+                            </div>
+                        </div>
+                        <textarea class="new-cmnt-textarea" name="comment" rows="2">comment</textarea>
+                    </form>
+                </div>
+
+                <div class="cmnt-option" id="#btns">
+                    <form method="POST" action="">
+                    {% csrf_token %}
+                        <button type="submit" data-href="{% url 'home:comment_delete' 111 222 %}" class="confirm-delete cmnt-btn cmnt-delete-btn">delete</button>
+                    </form>
+                    <button class="cmnt-btn cmnt-edit-btn" onclick="">edit</button>
+                </div>
+                <div class="cmnt-opt-btns">
+                    <div class="cmnt-reply" id="#replyopt">
+                        <a><i class="fa fa-reply"></i>reply</a>
+                        <a class="cmnt-vote cmnt-upvote" href="{% url 'home:comment_vote' 111 222 1 %}">
+                            <i class="fa fa-caret-up up"></i>
+                        </a>
+                        0
+                        <a class="cmnt-vote cmnt-downvote" href="{% url 'home:comment_vote' 111 222 0 %}">
+                            <i class="fa fa-caret-down down"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>

@@ -14,3 +14,13 @@ class UserForms(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+class CommentForm(forms.Form):
+    comment = forms.CharField()
+
+class UserInfoForm(forms.Form):
+    propic = forms.FileField()
+    firstname = forms.CharField()
+    lastname = forms.CharField()
+    profession = forms.CharField()
+    color = forms.CharField()

@@ -1,11 +1,396 @@
 {% extends 'home/master.html' %}
+{% block custom-css %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/single-post.css' %}">
+{% endblock %}
 {% block body %}
- <h3>{{ post.title }}</h3>
-    <p>{{ post.author }}</p>
-    <p>{{ post.date }}</p>
-    <h4>{{ post.post }}</h4>
-    {% if user.is_authenticated %}
-    <a href="{% url 'home:update_post' post.id %}">update</a>
-    <a href="{% url 'home:delete_post' post.id %}">delete</a>
+    <div class="post-wrapper">
+        <div class="row update-post-sec" style="display:none;" id="hidden-post-view">
+            {% load widget_tweaks %}
+            <div class="col-md-12 title-text">
+                <textarea id="post-title">{{ post.title }}</textarea>
+            </div>
+            <div class="col-md-12">
+                <textarea id="post-body" name="post">{{ post.post }}</textarea>
+            </div>
+            <div class="btn-group">
+                <button id="post-edit-submit" type="submit" class="btn btn-success flat-btn">submit</button>
+                <button id="post-edit-cancel" type="submit" class="btn btn-danger flat-btn">cancel</button>
+            </div>
+        </div>
+        <div id="post-view">
+            <div>
+            <div class="post-title" ><h3 id="view-post-title">{{ post.title }}</h3></div>
+            <div class="post-info">
+                {% load humanize %}
+                <p><i class="fa fa-square ipd"></i>By {{ post.author }}<i class="fa fa-square ipd ipd-ex"></i>{{ post.date|naturaltime }}</p>
+            </div>
+        </div>
+            <div class="main-post">
+            {% if delete or edit %}
+                <div class="user-options col-md-12">
+                {% if delete %}
+                    <form method="POST" action="{% url 'home:delete_post' post.id %}">
+                    {% csrf_token %}
+                    <input class="confirm-delete del-pos" type="submit" value="delete">
+                    </form>
+                {% endif %}
+                    {% if edit %}
+                <a class="edit-btn" id="post-edit-btn-id" href="#">update</a>
+                {% endif %}
+                </div>
+            {% endif %}
+            <div id="view-post-body"><p>{{ post.post|safe}}</p></div>
+            </div>
+        </div>
+    </div>
+    <div class="comment-wrapper">
+    <div class="title-com row">
+        <div class="col-md-10">
+            <h4 class="col-md-5 force-width">Comments(<span id="count-cmnt">{{ comments|length }}</span>)</h4>
+            <h4 class="col-md-5"><a id="follow-ajax" class="follow-link"  data-f="{{ follow }}" href="#">{{ follow }}</a></h4>
+        </div>
+        <div class="votes pull-right">
+            <h4 id="vote-sec">
+                <a id="upvote-id" href="#"><i class="fa fa-caret-up up"></i></a>
+                <b id="vote-count">{{ vote }}</b>
+                <a id="downvote-id" href="#"><i class="fa fa-caret-down down"></i></a>
+            </h4>
+        </div>
+    </div>
+    <div class="all-cmnt" id="all-cmnt">
+    <div class="new-comment" id="new-comment">
+            <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                <div class="form-group">
+                    <div class="col-sm-6 cmnt-author">
+                        {% if user.is_authenticated %}
+                            <h5><span >{{ user }}</span> says ...</h5>
+                        {% else %}
+                            <h5>(login required) <span >{{ user }}</span> says...</h5>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-6 cmnt-submit">
+                        <button id='dummy-cmnt-submit' type="submit" class="my-btn btn-success pull-right">comment</button>
+                    </div>
+                </div>
+                <textarea id='dummy-cmnt' class="new-cmnt-textarea" name="comment" rows="1"></textarea>
+            </form>
+        </div>
+        {% for comment in comments %}
+            <div class="single-comment" id="{{ comment.comment.pk }}" data-href="{% url 'home:comment_update' comment.comment.pk %}">
+                <div class="old-cmnt" id="{{ comment.comment.pk }}old" style="display: block">
+                    <div class="row">
+                        <div class="cmnt-avatar col-md-1"><img src="{{ comment.propic }}" alt=""></div>
+                        <div class="avatar-info col-md-11">
+                            <p class="cmnt-author">{{ comment.comment.author_id }}</p>
+                            <p class="cmnt-time">{{ comment.comment.date|naturaltime }}</p>
+                        </div>
+                    </div>
+                    <h5 class="cmnt-body">{{ comment.comment.comment }}</h5>
+                </div>
+
+                <div class="new-comment" style="display: none" id="{{ comment.comment.pk }}new">
+                    <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                        <div class="form-group">
+                            <div class="col-sm-6 cmnt-author">
+                                {% if user.is_authenticated %}
+                                    <h5><span >{{ user }}</span> says ...</h5>
+                                {% else %}
+                                    <h5>(login required) <span >{{ user }}</span> says...</h5>
+                                {% endif %}
+                            </div>
+                                    <div class="col-sm-6 cmnt-submit">
+                                        <button type="submit" class="my-btn btn-success pull-right" onclick="updateCmnt(event,{{ comment.comment.pk }})">update</button>
+                                        <button type="submit" class="my-btn btn-danger pull-right"  onclick="cancelUpdateCmnt(event,{{ comment.comment.pk }})">cancel</button>
+                                </div>
+                            </div>
+                        <textarea class="new-cmnt-textarea top-border" name="comment" rows="2">{{ comment.comment.comment }}</textarea>
+                    </form>
+                </div>
+
+                <div class="cmnt-option" id="{{ comment.comment.pk }}btns">
+                    {% if user == comment.comment.author_id or user.is_superuser or user == post.author%}
+                    <form method="POST" action="">
+                    {% csrf_token %}
+                        <button type="submit" onclick="deleteCmnt(event,{{ comment.comment.pk }})" data-href="{% url 'home:comment_delete' post.id comment.comment.pk %}" class="confirm-delete cmnt-btn cmnt-delete-btn">delete</button>
+                    </form>
+                    {% endif %}
+                    {% if user == comment.comment.author_id %}
+                    <button class="cmnt-btn cmnt-edit-btn" onclick="showDiv({{ comment.comment.pk }})">edit</button>
+                    {% endif %}
+                </div>
+                <div class="cmnt-opt-btns">
+                    <div class="cmnt-reply" id="{{ comment.comment.pk }}replyopt">
+                        <a><i class="fa fa-reply"></i>reply</a>
+                        <a class="cmnt-vote cmnt-upvote" href="{% url 'home:comment_vote' post.id comment.comment.pk 1 %}">
+                            <i class="fa fa-caret-up up"></i>
+                        </a>
+                        {{ comment.vote }}
+                        <a class="cmnt-vote cmnt-downvote" href="{% url 'home:comment_vote' post.id comment.comment.pk 0 %}">
+                            <i class="fa fa-caret-down down"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% for reply in comment.reply %}
+                <div class="single-comment reply row">
+                    <div class="reply-ico col-md-2"><i class="fa fa-reply -rotate-180"></i></div>
+                    <div class="col-md-10">
+                        <p class="cmnt-author">{{ reply.user }}</p>
+                        <p class="cmnt-time">{{ reply.date|naturaltime }}</p>
+                        <h5 class="cmnt-body">{{ reply.reply }}</h5>
+                        <div class="cmnt-reply">
+                            <i class="fa fa-caret-up up"></i>0<i class="fa fa-caret-down down"></i>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    </div>
+    <div style="display: none">
+        {% include 'home/temp_cmnt.html' %}
+    </div>
+{% endblock %}
+
+{% block side-opt %}
+    <div class="recent">
+    <h3>recent post</h3>
+    {% for r in recent %}
+        <a href="{% url 'home:single_post' r.pk %}"><i class="fa fa-dot-circle-o"></i>{{ r.title|truncatechars:25  }}</a><br>
+    {% endfor %}
+    </div>
+    {% if user.is_authenticated and followed|length %}
+        <div class="recent following">
+            <h3>following</h3>
+            {% for f in followed %}
+                <a href="{% url 'home:single_post' f.pk %}"><i class="fa fa-dot-circle-o"></i>{{ f.title|truncatechars:25  }}</a><br>
+            {% endfor %}
+        </div>
     {% endif %}
+{% endblock %}
+
+{% block custom-js %}
+    <script type="text/javascript" src="{% static 'home/js/nice-edit.js' %}"></script>
+
+    <script type="text/javascript">
+        function showDiv(id){
+            document.getElementById(id+'new').style.display = 'block';
+            document.getElementById(id+'old').style.display = 'none';
+            document.getElementById(id+'btns').style.display = 'none';
+            document.getElementById(id+'replyopt').style.display = 'none';
+        }
+    </script>
+    <script>
+        function updateCmnt(e,id) {
+            e.preventDefault();
+            var full = $('#'+id);
+            var new_cmnt = full.find('.new-cmnt-textarea').val();
+            full.find('.cmnt-time').text("now");
+            full.find('.cmnt-body').text(new_cmnt);
+            full.find('.new-comment').hide();
+            full.find('.old-cmnt').show();
+            full.find('.cmnt-option').show();
+            full.find('.cmnt-reply').show();
+            var url_ = full.attr('data-href');
+            console.log(url_);
+
+            $.ajax({
+               type:'POST',
+               url:url_,
+               data:{
+                   cmnt_id:id,
+                   comment:new_cmnt,
+                   'csrfmiddlewaretoken': '{{ csrf_token }}'
+               },
+               success:function () {
+
+               }
+            });
+        }
+    </script>
+    <script>
+        function cancelUpdateCmnt(e,id) {
+            e.preventDefault();
+            var full = $('#'+id);
+            full.find('.new-comment').hide();
+            full.find('.old-cmnt').show();
+            full.find('.cmnt-option').show();
+            full.find('.cmnt-reply').show();
+        }
+    </script>
+    <script>
+        function deleteCmnt(e,id){
+            e.preventDefault();
+            var full = $('#'+id);
+            url_ = full.find('.cmnt-delete-btn').attr('data-href');
+            full.remove();
+            $.ajax({
+               type:'POST',
+               url:url_,
+               data:{
+                   'csrfmiddlewaretoken': '{{ csrf_token }}'
+               },
+               success:function () {
+
+               }
+            });
+        }
+    </script>
+    <script>
+        $(document).on('click','#follow-ajax',function(e){
+            e.preventDefault()
+
+            var  this_ = document.getElementById("follow-ajax")
+            var state = this_.innerHTML
+            if(state=="follow")state="unfollow";
+            else state="follow";
+
+            this_.innerHTML=state;
+            $.ajax({
+               type:'GET',
+               url:"{% url 'home:post_follow' post.id %}",
+               data:{},
+               success:function () {
+
+               }
+            });
+        })
+    </script>
+    <script>
+        $(document).on('click','#post-edit-btn-id',function(e){
+           e.preventDefault();
+           document.getElementById("hidden-post-view").style.display='block';
+           document.getElementById("post-view").style.display = 'none';
+           new nicEditor({
+                fullPanel: true
+            }).panelInstance('post-body');
+        });
+    </script>
+    <script>
+        $(document).on('click','#post-edit-submit',function(e){
+           e.preventDefault();
+           var title = $('#post-title').val();
+           var post = document.getElementsByClassName('nicEdit-main')[0];
+           post=post.innerHTML;
+           document.getElementById("hidden-post-view").style.display='none';
+           document.getElementById("post-view").style.display='block';
+           $('#view-post-title').text(title);
+           $('#view-post-body').html(post);
+           $.ajax({
+               type:'POST',
+                   url:"{% url 'home:update_post' post.pk %}",
+                   data:{
+                       'title':title,
+                       'post':post,
+                       'csrfmiddlewaretoken': '{{ csrf_token }}'
+                   },
+                   success:function () {
+
+                   }
+            });
+        });
+    </script>
+    <script>
+        $(document).on('click','#dummy-cmnt-submit',function(e){
+
+            e.preventDefault();
+            var count = parseInt($('#count-cmnt').text());
+            $('#count-cmnt').text(count+1);
+            var comment = $('#dummy-cmnt').val()
+            $('#dummy-cmnt').val("");
+            var new_cmnt = $("#clone").clone();
+            new_cmnt.find('.cmnt-body').text(comment);
+            new_cmnt.find('.new-cmnt-textarea').text(comment);
+            var pid = {{ post.id }};
+            var cmnt_del_url = new_cmnt.find('.cmnt-delete-btn').attr('data-href');
+            cmnt_del_url = cmnt_del_url.replace("111",pid);
+
+            var cmnt_upvote_url = new_cmnt.find('.cmnt-upvote').attr('href');
+            cmnt_upvote_url = cmnt_upvote_url.replace("111",pid);
+
+            var cmnt_downvote_url = new_cmnt.find('.cmnt-downvote').attr('href');
+            cmnt_downvote_url = cmnt_downvote_url.replace("111",pid);
+
+            var cmnt_update_url = new_cmnt.attr('data-href');
+
+            $("#all-cmnt").append(new_cmnt);
+            $.ajax({
+                type:'POST',
+                url:"{% url 'home:post_comment' post.id %}",
+                data:{
+                    'post_id':{{ post.id }},
+                    'comment':comment,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success:function (response) {
+                    response = "{"+response.split("{")[1].split("}")[0]+"}";
+                    console.log(response);
+                    var tt = JSON.parse(response);
+                    id = tt.id;
+                    var propic = tt.propic;
+                    console.log(id);
+                    console.log(propic);
+                    cmnt_del_url = cmnt_del_url.replace("222",id);
+                    cmnt_upvote_url = cmnt_upvote_url.replace("222",id);
+                    cmnt_downvote_url = cmnt_downvote_url.replace("222",id);
+                    cmnt_update_url = cmnt_update_url.replace("222",id);
+
+                    new_cmnt.attr('id',id);
+                    new_cmnt.attr('data-href',cmnt_update_url);
+                    new_cmnt.find('#old').attr('id',id+'old');
+                    new_cmnt.find('#new').attr('id',id+"new");
+                    new_cmnt.find('.avatar-img').attr('src',propic)
+                    new_cmnt.find('.btn-success').attr('onclick',"updateCmnt(event,"+id+")");
+                    new_cmnt.find('.btn-danger').attr('onclick',"cancelUpdateCmnt(event,"+id+")");
+                    new_cmnt.find('.cmnt-option').attr('id',id+"btns");
+                    new_cmnt.find('.cmnt-delete-btn').attr('onclick',"deleteCmnt(event,"+id+")");
+                    new_cmnt.find('.cmnt-delete-btn').attr('data-href',cmnt_del_url);
+                    new_cmnt.find('.cmnt-edit-btn').attr('onclick',"showDiv("+id+")");
+                    new_cmnt.find('.cmnt-reply').attr('id',id+"replyopt");
+                    new_cmnt.find('.cmnt-upvote').attr('href',cmnt_upvote_url);
+                    new_cmnt.find('.cmnt-downvote').attr('href',cmnt_downvote_url);
+                }
+       });
+        });
+    </script>
+    <script>
+        $(document).on('click','#post-edit-cancel',function(e){
+           e.preventDefault();
+           document.getElementById("hidden-post-view").style.display='none';
+           document.getElementById("post-view").style.display='block';
+        });
+    </script>
+    <script>
+    $(document).on('click','#upvote-id',function(e){
+       e.preventDefault();
+       var vote_sec = document.getElementById("vote-count");
+       //alert(vote_sec.innerText)
+       $.ajax({
+           type:'GET',
+           url:"{% url 'home:post_vote' post.id 1 %}",
+           data:{},
+           success:function () {
+               vote_sec.innerText = parseInt(vote_sec.innerText)+1;
+           }
+       });
+    });
+    </script>
+    <script>
+    $(document).on('click','#downvote-id',function(e){
+       e.preventDefault();
+       var vote_sec = document.getElementById("vote-count");
+
+       $.ajax({
+           type:'GET',
+           url:"{% url 'home:post_vote' post.id 0 %}",
+           data:{},
+           success:function () {
+                vote_sec.innerText = parseInt(vote_sec.innerText)-1;
+           }
+       });
+    });
+    </script>
 {% endblock %}

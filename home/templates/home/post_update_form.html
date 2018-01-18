@@ -1,0 +1,28 @@
+<div class="form-group text-attr">
+    {% load staticfiles %}
+    <script type="text/javascript" src="{% static 'home/js/nice-edit.js' %}"></script>
+        <script type="text/javascript">
+            //<![CDATA[
+            bkLib.onDomLoaded(function () {
+                new nicEditor({
+                    fullPanel: true
+                }).panelInstance('post-body');
+            });
+            //]]>
+        </script>
+    <div class="col-sm-offset-2 col-sm-10">
+        <span class="text-danger small">{{ form.title.errors }}</span>
+    </div>
+    <label class="control-label col-sm-2" >{{ form.title.label_tag }}</label>
+    {% load widget_tweaks %}
+    <div class="col-md-10 title-text">{{ form.title|attr:"rows:2" }}</div>
+    <div class="col-sm-offset-2 col-sm-10">
+        <span class="text-danger small">{{ form.post.errors }}</span>
+    </div>
+    <label class="control-label col-sm-2" >{{ form.post.label_tag }}</label>
+    <div class="col-md-10">
+        <textarea id="post-body" name="post">
+            Write your post here...
+        </textarea>
+    </div>
+</div>
