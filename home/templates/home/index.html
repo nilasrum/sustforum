@@ -11,7 +11,7 @@
                     <div class="post-title"><a href="{% url 'home:single_post' post.post.pk %}"><h4>{{ post.post.title }}</h4></a></div>
                     <div class="post-info">
                         {% load humanize %}
-                        <p><i class="fa fa-square ipd"></i>By {{ post.post.author }}<i class="fa fa-square ipd ipd-ex"></i>{{ post.post.date|naturaltime }}</p>
+                        <p><i class="fa fa-square ipd"></i>By <a href="{% url 'home:profile' post.post.author.pk %}">{{ post.post.author }}</a><i class="fa fa-square ipd ipd-ex"></i>{{ post.post.date|naturaltime }}</p>
                     </div>
                 </div>
             </div>
@@ -43,14 +43,14 @@
     <div class="recent">
     <h3>recent post</h3>
     {% for r in recent %}
-        <a href="#"><i class="fa fa-dot-circle-o"></i>{{ r.title|truncatechars:25  }}</a><br>
+        <a href="{% url 'home:single_post' r.pk %}"><i class="fa fa-dot-circle-o"></i>{{ r.title|truncatechars:25  }}</a><br>
     {% endfor %}
     </div>
     {% if user.is_authenticated and followed|length %}
         <div class="recent following">
         <h3>following</h3>
             {% for f in followed %}
-                <a href="#"><i class="fa fa-dot-circle-o"></i>{{ f.title|truncatechars:25  }}</a><br>
+                <a href="{% url 'home:single_post' f.pk %}"><i class="fa fa-dot-circle-o"></i>{{ f.title|truncatechars:25  }}</a><br>
             {% endfor %}
     </div>
     {% endif %}

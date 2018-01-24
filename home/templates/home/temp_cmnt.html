@@ -39,12 +39,11 @@
                 </div>
                 <div class="cmnt-opt-btns">
                     <div class="cmnt-reply" id="#replyopt">
-                        <a><i class="fa fa-reply"></i>reply</a>
-                        <a class="cmnt-vote cmnt-upvote" href="{% url 'home:comment_vote' 111 222 1 %}">
+                        <a class="cmnt-vote cmnt-upvote" onclick="" data-href="{% url 'home:comment_vote' 111 222 1 %}">
                             <i class="fa fa-caret-up up"></i>
                         </a>
-                        0
-                        <a class="cmnt-vote cmnt-downvote" href="{% url 'home:comment_vote' 111 222 0 %}">
+                        <span class="cmnt-vote-display" style="font-weight: bold">0</span>
+                        <a class="cmnt-vote cmnt-downvote" onclick="" data-href="{% url 'home:comment_vote' 111 222 0 %}">
                             <i class="fa fa-caret-down down"></i>
                         </a>
                     </div>

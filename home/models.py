@@ -24,6 +24,7 @@ class Comment(models.Model):
     comment = models.CharField(max_length=1000)
     author_id = models.ForeignKey(User,on_delete=models.CASCADE)
     date = models.DateTimeField()
+    vote = models.IntegerField(default=0)
 
     def get_absolute_url(self):
         return reverse('home:single_post',kwargs={'post_id':self.post.pk})

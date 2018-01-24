@@ -23,7 +23,7 @@
             <div class="post-title" ><h3 id="view-post-title">{{ post.title }}</h3></div>
             <div class="post-info">
                 {% load humanize %}
-                <p><i class="fa fa-square ipd"></i>By {{ post.author }}<i class="fa fa-square ipd ipd-ex"></i>{{ post.date|naturaltime }}</p>
+                <p><i class="fa fa-square ipd"></i>By <a href="{% url 'home:profile' post.author.pk %}">{{ post.author }}</a><i class="fa fa-square ipd ipd-ex"></i>{{ post.date|naturaltime }}</p>
             </div>
         </div>
             <div class="main-post">
@@ -123,30 +123,16 @@
                 </div>
                 <div class="cmnt-opt-btns">
                     <div class="cmnt-reply" id="{{ comment.comment.pk }}replyopt">
-                        <a><i class="fa fa-reply"></i>reply</a>
-                        <a class="cmnt-vote cmnt-upvote" href="{% url 'home:comment_vote' post.id comment.comment.pk 1 %}">
+                        <a class="cmnt-vote cmnt-upvote" href="javascript:void(0);" onclick="upvoteCmnt(event,{{ comment.comment.pk }},1)" data-href="{% url 'home:comment_vote' post.id comment.comment.pk 1 %}">
                             <i class="fa fa-caret-up up"></i>
                         </a>
-                        {{ comment.vote }}
-                        <a class="cmnt-vote cmnt-downvote" href="{% url 'home:comment_vote' post.id comment.comment.pk 0 %}">
+                        <span class="cmnt-vote-display" style="font-weight: bold">{{ comment.comment.vote }}</span>
+                        <a class="cmnt-vote cmnt-downvote"  href="javascript:void(0);" onclick="upvoteCmnt(event,{{ comment.comment.pk }},0)" data-href="{% url 'home:comment_vote' post.id comment.comment.pk 0 %}">
                             <i class="fa fa-caret-down down"></i>
                         </a>
                     </div>
                 </div>
             </div>
-            {% for reply in comment.reply %}
-                <div class="single-comment reply row">
-                    <div class="reply-ico col-md-2"><i class="fa fa-reply -rotate-180"></i></div>
-                    <div class="col-md-10">
-                        <p class="cmnt-author">{{ reply.user }}</p>
-                        <p class="cmnt-time">{{ reply.date|naturaltime }}</p>
-                        <h5 class="cmnt-body">{{ reply.reply }}</h5>
-                        <div class="cmnt-reply">
-                            <i class="fa fa-caret-up up"></i>0<i class="fa fa-caret-down down"></i>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
         {% endfor %}
     </div>
     </div>
@@ -308,10 +294,10 @@
             var cmnt_del_url = new_cmnt.find('.cmnt-delete-btn').attr('data-href');
             cmnt_del_url = cmnt_del_url.replace("111",pid);
 
-            var cmnt_upvote_url = new_cmnt.find('.cmnt-upvote').attr('href');
+            var cmnt_upvote_url = new_cmnt.find('.cmnt-upvote').attr('data-href');
             cmnt_upvote_url = cmnt_upvote_url.replace("111",pid);
 
-            var cmnt_downvote_url = new_cmnt.find('.cmnt-downvote').attr('href');
+            var cmnt_downvote_url = new_cmnt.find('.cmnt-downvote').attr('data-href');
             cmnt_downvote_url = cmnt_downvote_url.replace("111",pid);
 
             var cmnt_update_url = new_cmnt.attr('data-href');
@@ -350,8 +336,10 @@
                     new_cmnt.find('.cmnt-delete-btn').attr('data-href',cmnt_del_url);
                     new_cmnt.find('.cmnt-edit-btn').attr('onclick',"showDiv("+id+")");
                     new_cmnt.find('.cmnt-reply').attr('id',id+"replyopt");
-                    new_cmnt.find('.cmnt-upvote').attr('href',cmnt_upvote_url);
-                    new_cmnt.find('.cmnt-downvote').attr('href',cmnt_downvote_url);
+                    new_cmnt.find('.cmnt-upvote').attr('data-href',cmnt_upvote_url);
+                    new_cmnt.find('.cmnt-upvote').attr('onclick',"upvoteCmnt(event,"+id+",1)");
+                    new_cmnt.find('.cmnt-downvote').attr('data-href',cmnt_downvote_url);
+                    new_cmnt.find('.cmnt-downvote').attr('onclick',"upvoteCmnt(event,"+id+",0)");
                 }
        });
         });
@@ -392,5 +380,32 @@
            }
        });
     });
+    </script>
+    <script>
+        function upvoteCmnt(e,id,type){
+            e.preventDefault();
+            var div = $('#'+id+"replyopt");
+            var vote = 0;
+            var  _url = "";
+            if(type==1){
+                console.log(div.find('.cmnt-vote-display').text());
+                vote = parseInt(div.find(".cmnt-vote-display").text())+1;
+                _url = div.find('.cmnt-upvote').attr("data-href");
+            }
+            if(type==0){
+                console.log(div.find('.cmnt-vote-display').text());
+                vote = parseInt(div.find(".cmnt-vote-display").text())-1;
+                _url = div.find('.cmnt-downvote').attr("data-href");
+
+            }
+            $.ajax({
+               type:'GET',
+               url:_url,
+               data:{},
+               success:function () {
+                    div.find(".cmnt-vote-display").text(vote);
+               }
+            });
+        }
     </script>
 {% endblock %}

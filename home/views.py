@@ -106,11 +106,23 @@ def index_view(request):
 
     query = request.GET.get("q")
     if query:
-        all_post =all_post.filter(
+        all_post=[]
+        all_posts =all_posts.filter(
             Q(title__icontains=query) |
             Q(post__icontains=query) |
             Q(author__username__icontains=query)
         ).distinct()
+
+        for post in all_posts:
+            temp = dict()
+            temp['post'] = post
+            temp['color'] = ara[random.randint(0, 6)]
+            try:
+                temp['uinfo'] = UserInfo.objects.get(user=post.author)
+                print temp['uinfo']
+            except:
+                pass
+            all_post.append(temp)
 
     paginator = Paginator(all_post, 10)  # Show 25 contacts per page
     page = request.GET.get('page')
@@ -146,13 +158,12 @@ def single_post(request,post_id):
         cuv = CommentVote.objects.filter(cmnt_id=com.pk, vote_type=1).count()
         cdv = CommentVote.objects.filter(cmnt_id=com.pk, vote_type=-1).count()
         com.vote = cuv - cdv
-        reply = Reply.objects.filter(comment=com)
+
         wrap["comment"] = com
         try:
             wrap["propic"] = UserInfo.objects.get(user=com.author_id).propic.url
         except:
             pass
-        wrap["reply"] = reply
         all_comments.append(wrap)
 
     follow = "unfollow"
@@ -345,8 +356,9 @@ def profile_view(request,user_id):
         wrap['uv'] = temp
         mostv.append(wrap)
     mostv = sorted(mostv, key=itemgetter('uv'), reverse=True)[:5]
-    uv /= ttl
-    dv /= ttl
+    if ttl!=0:
+        uv /= ttl
+        dv /= ttl
     uinfo = UserInfo.objects.get(user=puser)
     edit = request.user == puser
     pop = (uv/User.objects.all().count())*100
