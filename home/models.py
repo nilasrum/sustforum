@@ -136,3 +136,10 @@ class UserInfo(models.Model):
 
     def get_absolute_url(self):
         return reverse('home:profile',kwargs={'user_id':self.user.pk})
+
+class Faq(models.Model):
+    question = models.CharField(max_length=1000)
+    answer = models.TextField()
+
+    def __str__(self):
+        return self.question

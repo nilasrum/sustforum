@@ -1,0 +1,15 @@
+{% extends 'home/simple_master.html' %}
+{% load staticfiles %}
+{% block custom-css %}
+
+{% endblock %}
+{% block body %}
+<div class="faq-wrapper">
+{% for f in faq %}
+       <div class="single-faq">
+        <h3>{{ f.question }}</h3>
+        <p>{{ f.answer }}</p>
+       </div>
+   </div>
+{% endfor %}
+{% endblock %}

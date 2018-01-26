@@ -7,7 +7,7 @@ from django.views import generic
 from django.views.generic import View
 from django.views.generic.edit import CreateView,UpdateView,DeleteView
 from .forms import UserForms,LoginForm,CommentForm,UserInfoForm
-from .models import Post,Comment,Reply,PostTag,Tag,PostVote,PostFollowed,CommentVote,Room,UserInfo,User
+from .models import Post,Comment,Reply,PostTag,Tag,PostVote,PostFollowed,CommentVote,Room,UserInfo,User,Faq
 from datetime import datetime
 from django.core.urlresolvers import reverse,reverse_lazy
 from django.contrib.auth.decorators import login_required
@@ -390,3 +390,7 @@ class UpdateProfile(UpdateView):
         user = get_object_or_404(User,pk=pk)
         userinfo = get_object_or_404(UserInfo,user=user)
         return userinfo
+
+def faq_view(request):
+    faq = Faq.objects.all()
+    return render(request,'home/faq_page.html',{"faq":faq})

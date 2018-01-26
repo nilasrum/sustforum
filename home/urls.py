@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^login/$',views.login_form_view,name='login'),
     #logout
     url(r'^logout/$',views.logout_view,name='logout'),
+    # faq
+    url(r'^faq/$',views.faq_view,name='faq'),
     #profile
     url(r'^user/(?P<user_id>[0-9]+)/profile/$',views.profile_view,name='profile'),
     #profile update
